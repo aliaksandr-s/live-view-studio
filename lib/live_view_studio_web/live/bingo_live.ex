@@ -8,7 +8,15 @@ defmodule LiveViewStudioWeb.BingoLive do
         numbers: all_numbers()
       )
 
+    if connected?(socket) do
+      :timer.send_interval(3000, self(), :tick)
+    end
+
     {:ok, socket}
+  end
+
+  def handle_info(:tick, socket) do
+    {:noreply, pick(socket)}
   end
 
   def render(assigns) do
