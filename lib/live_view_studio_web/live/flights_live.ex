@@ -77,7 +77,7 @@ defmodule LiveViewStudioWeb.FlightsLive do
         </option>
       </datalist>
 
-      <div :if={@loading} class="loader">Loading...</div>
+      <.loader visible={@loading} />
 
       <div class="flights">
         <ul>

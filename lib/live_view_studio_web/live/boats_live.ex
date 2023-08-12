@@ -2,6 +2,16 @@ defmodule LiveViewStudioWeb.BoatsLive do
   use LiveViewStudioWeb, :live_view
 
   alias LiveViewStudio.Boats
+  import LiveViewStudioWeb.CustomComponents
+
+  defp type_options do
+    [
+      "All Types": "",
+      Fishing: "fishing",
+      Sporting: "sporting",
+      Sailing: "sailing"
+    ]
+  end
 
   def mount(_params, _session, socket) do
     socket =
@@ -18,69 +28,90 @@ defmodule LiveViewStudioWeb.BoatsLive do
 
     boats = Boats.list_boats(filter)
 
-    socket = assign(socket, 
-      filter: filter,
-      boats: boats
-    )
+    socket =
+      assign(socket,
+        filter: filter,
+        boats: boats
+      )
 
     {:noreply, socket}
   end
 
-  def render(assigns) do
+  attr :filter, :map, required: true
+
+  def filter_form(assigns) do
     ~H"""
-    <h1>Daily Boat Rentals</h1>
-    <div id="boats">
-      <form phx-change="filter">
-        <div class="filters">
-          <select name="type">
-            <%= Phoenix.HTML.Form.options_for_select(
-              type_options(),
-              @filter.type
-            ) %>
-          </select>
-          <div class="prices">
-            <%= for price <- ["$", "$$", "$$$"] do %>
-              <input
-                type="checkbox"
-                name="prices[]"
-                value={price}
-                id={price}
-                checked={price in @filter.prices}
-              />
-              <label for={price}><%= price %></label>
-            <% end %>
-            <input type="hidden" name="prices[]" value="" />
-          </div>
+    <form phx-change="filter">
+      <div class="filters">
+        <select name="type">
+          <%= Phoenix.HTML.Form.options_for_select(
+            type_options(),
+            @filter.type
+          ) %>
+        </select>
+        <div class="prices">
+          <%= for price <- ["$", "$$", "$$$"] do %>
+            <input
+              type="checkbox"
+              name="prices[]"
+              value={price}
+              id={price}
+              checked={price in @filter.prices}
+            />
+            <label for={price}><%= price %></label>
+          <% end %>
+          <input type="hidden" name="prices[]" value="" />
         </div>
-      </form>
-      <div class="boats">
-        <div :for={boat <- @boats} class="boat">
-          <img src={boat.image} />
-          <div class="content">
-            <div class="model">
-              <%= boat.model %>
-            </div>
-            <div class="details">
-              <span class="price">
-                <%= boat.price %>
-              </span>
-              <span class="type">
-                <%= boat.type %>
-              </span>
-            </div>
-          </div>
+      </div>
+    </form>
+    """
+  end
+
+  attr :boat, LiveViewStudio.Boats.Boat, required: true
+
+  def boat(assigns) do
+    ~H"""
+    <div class="boat">
+      <img src={@boat.image} />
+      <div class="content">
+        <div class="model">
+          <%= @boat.model %>
+        </div>
+        <div class="details">
+          <span class="price">
+            <%= @boat.price %>
+          </span>
+          <span class="type">
+            <%= @boat.type %>
+          </span>
         </div>
       </div>
     </div>
     """
   end
 
-  defp type_options do
-    [
-      "All Types": "",
-      Fishing: "fishing",
-      Sporting: "sporting",
-      Sailing: "sailing"
-    ]
+  def render(assigns) do
+    ~H"""
+    <h1>Daily Boat Rentals</h1>
+
+    <.promo expiration={1}>
+      Save 25% on rentals!
+      <:legal>
+        <Heroicons.exclamation_circle /> Limit 1 per party.
+      </:legal>
+    </.promo>
+
+    <div id="boats">
+      <.filter_form filter={@filter} />
+
+      <div class="boats">
+        <.boat :for={boat <- @boats} boat={boat} />
+      </div>
+    </div>
+
+    <.promo>
+      Hurry! Offer ends soon!
+    </.promo>
+    """
   end
 end
