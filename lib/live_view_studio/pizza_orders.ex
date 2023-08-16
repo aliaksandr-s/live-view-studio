@@ -4,6 +4,7 @@ defmodule LiveViewStudio.PizzaOrders do
   """
 
   import Ecto.Query, warn: false
+  alias Faker.Pizza
   alias LiveViewStudio.Repo
 
   alias LiveViewStudio.PizzaOrders.PizzaOrder
@@ -130,5 +131,18 @@ defmodule LiveViewStudio.PizzaOrders do
   """
   def change_pizza_order(%PizzaOrder{} = pizza_order, attrs \\ %{}) do
     PizzaOrder.changeset(pizza_order, attrs)
+  end
+
+  @doc """
+  Returns the total number of pizzas.
+
+  ## Examples
+
+      iex> count_pizzas()
+      100
+
+  """
+  def count_pizza_orders do
+    Repo.aggregate(PizzaOrder, :count, :id)
   end
 end

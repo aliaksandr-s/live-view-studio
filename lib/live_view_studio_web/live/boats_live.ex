@@ -26,15 +26,22 @@ defmodule LiveViewStudioWeb.BoatsLive do
   def handle_event("filter", %{"type" => type, "prices" => prices}, socket) do
     filter = %{type: type, prices: prices}
 
+    {:noreply, push_patch(socket, to: ~p"/boats?#{filter}")}
+  end
+
+  def handle_params(params, _uri, socket) do
+    filter = %{
+      type: params["type"] || "",
+      prices: params["prices"] || [""]
+    }
+
     boats = Boats.list_boats(filter)
 
-    socket =
-      assign(socket,
-        filter: filter,
-        boats: boats
-      )
-
-    {:noreply, socket}
+    {:noreply,
+     assign(socket,
+       filter: filter,
+       boats: boats
+     )}
   end
 
   attr :filter, :map, required: true
