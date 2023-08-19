@@ -10,7 +10,7 @@ defmodule LiveViewStudioWeb.ServersLive do
     socket =
       assign(socket,
         servers: servers,
-        coffees: 0,
+        coffees: 0
       )
 
     {:ok, socket}
@@ -47,6 +47,17 @@ defmodule LiveViewStudioWeb.ServersLive do
 
   def handle_event("drink", _, socket) do
     {:noreply, update(socket, :coffees, &(&1 + 1))}
+  end
+
+  def handle_event("validate", %{"server" => server_params}, socket) do
+    changeset =
+      %Server{}
+      |> Server.changeset(server_params)
+      |> Map.put(:action, :validate)
+
+    socket = assign(socket, form: to_form(changeset))
+
+    {:noreply, socket}
   end
 
   def handle_event("save", %{"server" => server_params}, socket) do
@@ -135,7 +146,12 @@ defmodule LiveViewStudioWeb.ServersLive do
       </div>
       <div class="main">
         <div class="wrapper">
-          <.form :if={@live_action == :new} for={@form} phx-submit="save">
+          <.form
+            :if={@live_action == :new}
+            for={@form}
+            phx-submit="save"
+            phx-change="validate"
+          >
             <div class="field">
               <.input
                 field={@form[:name]}
