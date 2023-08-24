@@ -1,6 +1,8 @@
 defmodule LiveViewStudioWeb.BingoLive do
   use LiveViewStudioWeb, :live_view
 
+  on_mount {LiveViewStudioWeb.UserAuth, :ensure_authenticated}
+
   def mount(_params, _session, socket) do
     socket =
       assign(socket,
@@ -22,6 +24,7 @@ defmodule LiveViewStudioWeb.BingoLive do
   def render(assigns) do
     ~H"""
     <h1>Bingo Boss 📢</h1>
+    <h3><%= @current_user.email %></h3>
     <div id="bingo">
       <div class="number">
         <%= @number %>
