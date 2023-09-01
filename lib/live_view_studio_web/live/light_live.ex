@@ -2,11 +2,25 @@ defmodule LiveViewStudioWeb.LightLive do
   use LiveViewStudioWeb, :live_view
 
   def mount(_params, _session, socket) do
-    socket = assign(socket, 
-      brightness: 10,
-      temp: "3000"
-    )
+    socket =
+      assign(socket,
+        brightness: 10,
+        temp: "3000"
+      )
+
     {:ok, socket}
+  end
+
+  def handle_event("update", %{"key" => "ArrowUp"}, socket) do
+    {:noreply, brightness_up(socket)}
+  end
+
+  def handle_event("update", %{"key" => "ArrowDown"}, socket) do
+    {:noreply, brightness_down(socket)}
+  end
+
+  def handle_event("update", _, socket) do
+    {:noreply, socket}
   end
 
   def handle_event("on", _, socket) do
@@ -15,13 +29,11 @@ defmodule LiveViewStudioWeb.LightLive do
   end
 
   def handle_event("up", _, socket) do
-    socket = update(socket, :brightness, &min(&1 + 10, 100))
-    {:noreply, socket}
+    {:noreply, brightness_up(socket)}
   end
 
   def handle_event("down", _, socket) do
-    socket = update(socket, :brightness, &max(&1 - 10, 0))
-    {:noreply, socket}
+    {:noreply, brightness_down(socket)}
   end
 
   def handle_event("off", _, socket) do
@@ -50,5 +62,15 @@ defmodule LiveViewStudioWeb.LightLive do
       "4000" -> "#FEFF66"
       "5000" -> "#99CCFF"
     end
+  end
+
+  # Helper functions
+
+  defp brightness_up(socket) do
+    update(socket, :brightness, &min(&1 + 10, 100))
+  end
+
+  defp brightness_down(socket) do
+    update(socket, :brightness, &max(&1 - 10, 0))
   end
 end

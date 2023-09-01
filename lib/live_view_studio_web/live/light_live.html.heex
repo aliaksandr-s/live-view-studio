@@ -1,5 +1,5 @@
 <h1>Front porch light</h1>
-<div id="light" class="light">
+<div id="light" class="light" phx-window-keyup="update">
   <div class="meter">
     <span style={"width: #{@brightness}%; background: #{temp_color(@temp)}"}>
       <%= @brightness %>%
