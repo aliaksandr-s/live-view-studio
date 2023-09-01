@@ -44,7 +44,7 @@ defmodule LiveViewStudioWeb.VolunteerFormComponent do
       socket
       |> assign(assigns)
       |> assign(:count, assigns.count + 1)
-   
+
     {:ok, socket}
   end
 
@@ -72,6 +72,7 @@ defmodule LiveViewStudioWeb.VolunteerFormComponent do
           placeholder="Phone"
           autocomplete="off"
           phx-debounce="blur"
+          phx-hook="PhoneNumber"
         />
         <.button phx-disable-with="Saving...">
           Check in

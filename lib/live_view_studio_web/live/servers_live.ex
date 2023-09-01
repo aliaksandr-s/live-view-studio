@@ -138,6 +138,15 @@ defmodule LiveViewStudioWeb.ServersLive do
           <.link patch={~p"/servers/new"} class="add">
             + Add New Server
           </.link>
+          <a
+            id={"#{@selected_server.id}-clipboard"}
+            data-content={
+              url(@socket, ~p"/servers/?id=#{@selected_server}")
+            }
+            phx-hook="Clipboard"
+          >
+            Copy Link
+          </a>
           <.link
             :for={server <- @servers}
             patch={~p"/servers?#{[id: server]}"}
